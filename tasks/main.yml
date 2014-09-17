@@ -1,0 +1,36 @@
+---
+- include: dependencies.yml
+
+- name: make tmpdir
+  file: >
+    path=/tmp/AdobeMediaServer-install
+    state=directory
+
+- name: download archive
+  get_url: >
+    url=http://download.macromedia.com/pub/adobemediaserver/5_0_6/AdobeMediaServer5_x64.tar.gz
+    dest=/tmp/AdobeMediaServer-install/AdobeMediaServer5_x64.tar.gz
+
+- name: unarchive
+  unarchive: >
+    src=/tmp/AdobeMediaServer-install/AdobeMediaServer5_x64.tar.gz
+    dest=/tmp/AdobeMediaServer-install
+    creates=/tmp/AdobeMediaServer-install/AMS_5_0_6_r6102/installAMS.orig
+
+- name: copy patch
+  copy: >
+    src=installAMS.automation.patch
+    dest=/tmp/AdobeMediaServer-install/AMS_5_0_6_r6102/installAMS.automation.patch
+
+- name: apply patch
+  shell: patch -p0 -b < installAMS.automation.patch
+  args:
+    chdir: /tmp/AdobeMediaServer-install/AMS_5_0_6_r6102
+    creates: /tmp/AdobeMediaServer-install/AMS_5_0_6_r6102/installAMS.orig
+    
+- name: run installer
+  command: /tmp/AdobeMediaServer-install/AMS_5_0_6_r6102/installAMS
+  args:
+    chdir: /tmp/AdobeMediaServer-install/AMS_5_0_6_r6102
+    creates: /opt/adobe/ams/uninstallAMS
+

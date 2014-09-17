@@ -1,0 +1,478 @@
+*** installAMS.orig	2014-07-22 09:44:25.000000000 +0000
+--- installAMS	2014-09-17 05:19:25.962361521 +0000
+***************
+*** 368,384 ****
+  echo ""
+  echo "To cancel the installation at any time, press Control-C."
+  echo ""
+! read cont < /dev/tty
+  
+  #########################
+  # Show license agreement
+  #########################
+  if [ -f "$cwd/$LICENSE" ]; then
+! more "$cwd/$LICENSE"
+  get_agreement () {
+    echo ""
+    printf "Do you agree with the license agreement? (y/n): "
+!   read yn
+  
+    case $yn in
+      y | Y) ;;
+--- 368,384 ----
+  echo ""
+  echo "To cancel the installation at any time, press Control-C."
+  echo ""
+! #read cont < /dev/tty
+  
+  #########################
+  # Show license agreement
+  #########################
+  if [ -f "$cwd/$LICENSE" ]; then
+! more "$cwd/$LICENSE" | cat
+  get_agreement () {
+    echo ""
+    printf "Do you agree with the license agreement? (y/n): "
+!   read yn <<< y
+  
+    case $yn in
+      y | Y) ;;
+***************
+*** 426,432 ****
+    echo "A key has been found from the previous install location of `cat $SERVICES_DIR_FMS/fms`/conf/fms.ini"
+    fi
+    printf "    Do you want to input this key: $2 ? (y/n): "
+!   read yn
+  
+    case $yn in
+      y | Y) ans="$2"
+--- 426,432 ----
+    echo "A key has been found from the previous install location of `cat $SERVICES_DIR_FMS/fms`/conf/fms.ini"
+    fi
+    printf "    Do you want to input this key: $2 ? (y/n): "
+!   read yn <<< y
+  
+    case $yn in
+      y | Y) ans="$2"
+***************
+*** 516,522 ****
+             ret_val=`$cwd/checksn -k $ans $2`
+             currentSN=$ans
+          else
+!      read in
+       if [ ! -z "$in" ]; then
+      ret_val=`$cwd/checksn -k $in $2`
+      currentSN=$in
+--- 516,522 ----
+             ret_val=`$cwd/checksn -k $ans $2`
+             currentSN=$ans
+          else
+!      read in <<< ""
+       if [ ! -z "$in" ]; then
+      ret_val=`$cwd/checksn -k $in $2`
+      currentSN=$in
+***************
+*** 530,536 ****
+    tryagain () {
+      printf "Would you like to try again? y/n:  " 
+      printf "Default [n]: "
+!     read yn
+  
+      if [ -z "$yn" ]; then
+    yn="n"
+--- 530,536 ----
+    tryagain () {
+      printf "Would you like to try again? y/n:  " 
+      printf "Default [n]: "
+!     read yn <<< n
+  
+      if [ -z "$yn" ]; then
+    yn="n"
+***************
+*** 594,600 ****
+  	echo "from the previous install location of"
+  	echo "`cat $SERVICES_DIR/ams`/conf/ams.ini"
+  	printf "Do you want to input this key: $oldkey ? (y/n Default [n]): "
+! 	read yn
+  
+  	case $yn in
+  		y | Y)
+--- 594,600 ----
+  	echo "from the previous install location of"
+  	echo "`cat $SERVICES_DIR/ams`/conf/ams.ini"
+  	printf "Do you want to input this key: $oldkey ? (y/n Default [n]): "
+! 	read yn <<< n
+  
+  	case $yn in
+  		y | Y)
+***************
+*** 1434,1440 ****
+    echo "The installer will install $PRODUCT $VERSION in the"
+    echo "following directory"
+    printf "Default [$INSTALLDIR]: "
+!   read dir
+  
+    if [ ! -z "$dir" ]; then
+      INSTALLDIR="$dir"
+--- 1434,1440 ----
+    echo "The installer will install $PRODUCT $VERSION in the"
+    echo "following directory"
+    printf "Default [$INSTALLDIR]: "
+!   read dir <<< ""
+  
+    if [ ! -z "$dir" ]; then
+      INSTALLDIR="$dir"
+***************
+*** 1449,1455 ****
+      echo "the previous installation with this installation,"
+      echo "or quit this installer? (y/q)"
+      printf "Default [y]: "
+!     read yn
+  
+      # if user pressed return, use default
+      if [ -z "$yn" ]; then
+--- 1449,1455 ----
+      echo "the previous installation with this installation,"
+      echo "or quit this installer? (y/q)"
+      printf "Default [y]: "
+!     read yn <<< y
+  
+      # if user pressed return, use default
+      if [ -z "$yn" ]; then
+***************
+*** 1511,1517 ****
+    get_username () {
+      echo ""
+      printf "Please enter the administrative username: "
+!     read in
+  
+      if [ ! -z "$in" ]; then
+        ADMINNAME=$in
+--- 1511,1517 ----
+    get_username () {
+      echo ""
+      printf "Please enter the administrative username: "
+!     read in <<< admin
+  
+      if [ ! -z "$in" ]; then
+        ADMINNAME=$in
+***************
+*** 1528,1541 ****
+    while [ 1 ]; do
+      echo ""
+      printf "For increased security, enter a password of at least 8 characters. \nPlease enter the administrative password: "
+!     read in
+      if [ `echo -n $in | wc -c` -lt 8 ]; then
+          echo ""
+          echo "ERROR: The Administrator password must be at least 8 characters long."
+      else
+        echo ""
+        printf "Confirm password: "
+!       read in_confirm
+        if [ "X$in" != "X$in_confirm" ]; then
+          echo ""
+          echo "ERROR: Passwords do not match."
+--- 1528,1541 ----
+    while [ 1 ]; do
+      echo ""
+      printf "For increased security, enter a password of at least 8 characters. \nPlease enter the administrative password: "
+!     read in <<< adminpass
+      if [ `echo -n $in | wc -c` -lt 8 ]; then
+          echo ""
+          echo "ERROR: The Administrator password must be at least 8 characters long."
+      else
+        echo ""
+        printf "Confirm password: "
+!       read in_confirm <<< adminpass
+        if [ "X$in" != "X$in_confirm" ]; then
+          echo ""
+          echo "ERROR: Passwords do not match."
+***************
+*** 1557,1563 ****
+      echo ""
+      echo "User \"$PROCESS_OWNER\" does not exist. Do you want to create it?(y/n)"
+      printf "Default [y]: "
+!     read yn
+  
+      # if user pressed return, use default
+      if [ -z "$yn" ]; then
+--- 1557,1563 ----
+      echo ""
+      echo "User \"$PROCESS_OWNER\" does not exist. Do you want to create it?(y/n)"
+      printf "Default [y]: "
+!     read yn <<< y
+  
+      # if user pressed return, use default
+      if [ -z "$yn" ]; then
+***************
+*** 1581,1587 ****
+  		echo "will run as user [$DEFAULT_PROCESS_OWNER]."
+  		echo "You must install as root to set different user."
+  		printf "Do you want to abort installation? Default [n]:"
+! 		read yn
+  		if [ -z "$yn" ]; then
+  			yn=N
+  		fi
+--- 1581,1587 ----
+  		echo "will run as user [$DEFAULT_PROCESS_OWNER]."
+  		echo "You must install as root to set different user."
+  		printf "Do you want to abort installation? Default [n]:"
+! 		read yn <<< n
+  		if [ -z "$yn" ]; then
+  			yn=N
+  		fi
+***************
+*** 1609,1615 ****
+  		echo ""
+  		echo "Please enter the user that the $PRODUCT service will run as"
+  		printf "Default user [$DEFAULT_PROCESS_OWNER]: "
+! 		read in
+  		PROCESS_OWNER=$DEFAULT_PROCESS_OWNER
+  		FMS_CREATE_USER=0
+  		if [ ! -z "$in" ]; then
+--- 1609,1615 ----
+  		echo ""
+  		echo "Please enter the user that the $PRODUCT service will run as"
+  		printf "Default user [$DEFAULT_PROCESS_OWNER]: "
+! 		read in <<< ""
+  		PROCESS_OWNER=$DEFAULT_PROCESS_OWNER
+  		FMS_CREATE_USER=0
+  		if [ ! -z "$in" ]; then
+***************
+*** 1625,1631 ****
+  			echo ""
+  			echo "Please enter a valid user group for the \"$PROCESS_OWNER\" user."
+  			printf "Default group [$OWNER_GROUP]:"
+! 			read in
+      		if [ -n "$in" ]; then
+      			OWNER_GROUP=$in
+      		fi
+--- 1625,1631 ----
+  			echo ""
+  			echo "Please enter a valid user group for the \"$PROCESS_OWNER\" user."
+  			printf "Default group [$OWNER_GROUP]:"
+! 			read in <<< ""
+      		if [ -n "$in" ]; then
+      			OWNER_GROUP=$in
+      		fi
+***************
+*** 1674,1680 ****
+      DEFAULT_GROUP=`groups $PROCESS_OWNER  | egrep -o '[^ ]*$'`
+      printf "Default group [$DEFAULT_GROUP]: "
+  
+!     read in
+  
+      if [ -z "$in" ]; then
+        in="$DEFAULT_GROUP"
+--- 1674,1680 ----
+      DEFAULT_GROUP=`groups $PROCESS_OWNER  | egrep -o '[^ ]*$'`
+      printf "Default group [$DEFAULT_GROUP]: "
+  
+!     read in <<< ""
+  
+      if [ -z "$in" ]; then
+        in="$DEFAULT_GROUP"
+***************
+*** 1703,1709 ****
+      echo ""
+      echo "Do you want to install apache? (y/n)"
+      printf "Default [y]: "
+!     read yn
+  
+      if [ -z "$yn" ];then
+        yn="y"
+--- 1703,1709 ----
+      echo ""
+      echo "Do you want to install apache? (y/n)"
+      printf "Default [y]: "
+!     read yn <<< y
+  
+      if [ -z "$yn" ];then
+        yn="y"
+***************
+*** 1733,1739 ****
+  		echo "Would you like for Apache or AMS to listen on port 80?"
+  		echo "Enter 'y' for Apache, 'n' for AMS. (y/n)"
+  		printf "Default [y]: "
+! 		read yn
+  
+  		if [ -z "$yn" ];then
+  		  yn="y"
+--- 1733,1739 ----
+  		echo "Would you like for Apache or AMS to listen on port 80?"
+  		echo "Enter 'y' for Apache, 'n' for AMS. (y/n)"
+  		printf "Default [y]: "
+! 		read yn <<< y
+  
+  		if [ -z "$yn" ];then
+  		  yn="y"
+***************
+*** 1758,1764 ****
+      echo "If you know the interface(IP address) that AMS will listen on, please enter it here."
+  	echo "If not, AMS will try to auto-detect it."
+  	printf "Default []: "
+!     read in
+  
+      if [ ! -z "$in" ]; then
+        FMS_INTERFACE="$in"
+--- 1758,1764 ----
+      echo "If you know the interface(IP address) that AMS will listen on, please enter it here."
+  	echo "If not, AMS will try to auto-detect it."
+  	printf "Default []: "
+!     read in <<< ""
+  
+      if [ ! -z "$in" ]; then
+        FMS_INTERFACE="$in"
+***************
+*** 1780,1786 ****
+        echo "Apache will run as user $USERID. "
+        echo "To set different user, install as root. "
+        printf "Do you want to continue(c) or abort(a) installation? Default [c]:"
+!       read yn
+        if [ -z "$yn" ]; then 
+           yn="C"
+        fi
+--- 1780,1786 ----
+        echo "Apache will run as user $USERID. "
+        echo "To set different user, install as root. "
+        printf "Do you want to continue(c) or abort(a) installation? Default [c]:"
+!       read yn <<< "c"
+        if [ -z "$yn" ]; then 
+           yn="C"
+        fi
+***************
+*** 1804,1810 ****
+      echo ""
+      echo "Please enter the user that Apache will eventually run as."
+      printf "Default user [$DEFAULT_APACHE_OWNER]: "
+!     read in
+  
+      if [ ! -z "$in" ]; then
+        APACHE_OWNER="$in"
+--- 1804,1810 ----
+      echo ""
+      echo "Please enter the user that Apache will eventually run as."
+      printf "Default user [$DEFAULT_APACHE_OWNER]: "
+!     read in <<< ""
+  
+      if [ ! -z "$in" ]; then
+        APACHE_OWNER="$in"
+***************
+*** 1865,1871 ****
+      echo ""
+      echo "Please enter the $PRODUCT port(s), comma-separated"
+      printf "Default [$FMS_SERVER_PORT]: "
+!     read in
+  
+      if [ ! -z "$in" ]; then
+        FMS_SERVER_PORT=$in
+--- 1865,1871 ----
+      echo ""
+      echo "Please enter the $PRODUCT port(s), comma-separated"
+      printf "Default [$FMS_SERVER_PORT]: "
+!     read in <<< ""
+  
+      if [ ! -z "$in" ]; then
+        FMS_SERVER_PORT=$in
+***************
+*** 1911,1917 ****
+  			echo "You can manually configure Apache and AMS ports by editing Apache2.2/conf/httpd.conf and conf/ams.ini respectively."
+  			echo "Also note that even though Apache is listening on port 80, RTMPT over port 80 is still supported."
+  			echo "However, if AMS is listening on port 80, HDS on port 80 is not supported."
+! 			read -p "Press any key to continue..."
+          else 
+  			FMS_SERVER_PORT=$FMS_SERVER_PORT$temp1,            
+  		fi
+--- 1911,1917 ----
+  			echo "You can manually configure Apache and AMS ports by editing Apache2.2/conf/httpd.conf and conf/ams.ini respectively."
+  			echo "Also note that even though Apache is listening on port 80, RTMPT over port 80 is still supported."
+  			echo "However, if AMS is listening on port 80, HDS on port 80 is not supported."
+! 			read -p "Press any key to continue..." <<< ""
+          else 
+  			FMS_SERVER_PORT=$FMS_SERVER_PORT$temp1,            
+  		fi
+***************
+*** 1926,1932 ****
+  	    echo "You can manually configure Apache and AMS ports by editing Apache2.2/conf/httpd.conf and conf/ams.ini respectively."
+  		echo "Also note that even though Apache is listening on port 80, RTMPT over port 80 is still supported."
+  		echo "However, if AMS is listening on port 80, HDS on port 80 is not supported."
+! 		read -p "Press any key to continue..."
+          #remove last , if there
+          len=`expr length $FMS_SERVER_PORT`
+          temp1=`expr substr $FMS_SERVER_PORT $len 1`
+--- 1926,1932 ----
+  	    echo "You can manually configure Apache and AMS ports by editing Apache2.2/conf/httpd.conf and conf/ams.ini respectively."
+  		echo "Also note that even though Apache is listening on port 80, RTMPT over port 80 is still supported."
+  		echo "However, if AMS is listening on port 80, HDS on port 80 is not supported."
+! 		read -p "Press any key to continue..." <<< ""
+          #remove last , if there
+          len=`expr length $FMS_SERVER_PORT`
+          temp1=`expr substr $FMS_SERVER_PORT $len 1`
+***************
+*** 1948,1954 ****
+      echo "Please enter the port to use for the Admin service. You can only specify one"
+      echo "admin port."
+      printf "Default [$ADMIN_SERVER_PORT]: "
+!     read in
+  
+      if [ ! -z "$in" ]; then
+        ADMIN_SERVER_PORT=$in
+--- 1948,1954 ----
+      echo "Please enter the port to use for the Admin service. You can only specify one"
+      echo "admin port."
+      printf "Default [$ADMIN_SERVER_PORT]: "
+!     read in <<< ""
+  
+      if [ ! -z "$in" ]; then
+        ADMIN_SERVER_PORT=$in
+***************
+*** 1987,1993 ****
+      echo "Do you want the $PRODUCT service to run as a"
+      echo "daemon? (y/n)"
+      printf "Default [y]: "
+!     read yn
+  
+      if [ -z "$yn" ];then
+        yn="Y"
+--- 1987,1993 ----
+      echo "Do you want the $PRODUCT service to run as a"
+      echo "daemon? (y/n)"
+      printf "Default [y]: "
+!     read yn <<< y
+  
+      if [ -z "$yn" ];then
+        yn="Y"
+***************
+*** 2019,2025 ****
+      echo "Do you want to start the $PRODUCT"
+      echo "after the installation is done? (y/n)"
+      printf "Default [y]: "
+!     read yn
+  
+      if [ -z "$yn" ];then
+        yn="Y"
+--- 2019,2025 ----
+      echo "Do you want to start the $PRODUCT"
+      echo "after the installation is done? (y/n)"
+      printf "Default [y]: "
+!     read yn <<< y
+  
+      if [ -z "$yn" ];then
+        yn="Y"
+***************
+*** 2085,2091 ****
+    # okay to continue?
+    get_installagreement () {
+      printf 'Proceed with the installation? (y/n/q): '
+!     read yn
+  
+      case $yn in
+        y | Y) okToProceed=1
+--- 2085,2091 ----
+    # okay to continue?
+    get_installagreement () {
+      printf 'Proceed with the installation? (y/n/q): '
+!     read yn <<< y
+  
+      case $yn in
+        y | Y) okToProceed=1
